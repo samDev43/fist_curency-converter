@@ -1,0 +1,98 @@
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+</head>
+<body>
+   <div class="flex justify-center items-center h-full w-full"> 
+    <div class="items-center w-[200rem] " >
+        <div class="w-full max-w-md mx-auto h-[38rem] shadow-lg p-8 rounded-lg bg-white flex flex-col gap-6">
+            <h1 class="text-4xl font-bold text-center">Currency Converter</h1>
+          
+            <div>
+              <p class="text-lg mb-2">From</p>
+              <select class="w-full border border-black p-2 rounded-lg getingCurrency fromCurrency" >
+                <option value="">Select currency</option>
+              </select>
+            </div>
+          
+            <div>
+              <p class="text-lg mb-2">To</p>
+              <select class="w-full border border-black p-2 rounded-lg getingCurrency toCurrency">
+                <option value="">Select currency</option>
+              </select>
+            </div>
+          
+            <div>
+              <p class="text-lg mb-2">Amount</p>
+              <input  type="number" class="w-full border border-black p-2 rounded-lg" id="amount" placeholder="Enter amount" />
+            </div>
+          
+            <div class="flex justify-center">
+              <button id="convert" class="w-full bg-red-600 hover:bg-red-700 text-white p-3 rounded-lg mt-6">Convert</button>
+            </div>
+            <div class="w-full  rounded-lg" id="toAmount">
+              <input class="w-full border border-black p-2 rounded-lg" id="amountAns" type="text">
+            </div>
+          </div>
+          
+   </div>
+  </div>
+  <p id="quickCheck"></p>
+  
+    <script>
+      'https://v6.exchangerate-api.com/v6/2e9f16e36a238c9e3118b0c3/codes'
+        const myKey = '2e9f16e36a238c9e3118b0c3'
+        // fetch(`https://v6.exchangerate-api.com/v6/${myKey}/pair/EUR/GBP`)
+        // .then((res)=>{
+        //     res.json()
+        //     console.log(res)
+        // })
+        // .then((codes)=>{
+        //     console.log(codes['supported_code'])
+        // }).catch((err)=>{
+        //    console.log(err)
+        // })
+
+      
+
+        async function currencyList(){
+          try{
+            const res = await fetch(`https://v6.exchangerate-api.com/v6/${myKey}/codes`)
+          const codes = await res.json()
+          
+          codes['supported_codes'].forEach(code => {
+            console.log(code[0])
+            quickCheck.innerHTML += code
+            let selectField = document.querySelectorAll('.getingCurrency');
+            selectField.forEach((Select)=>{
+              Select.innerHTML += ` <option value="${code[0]}">${code[0]},  ${code[1]}</option>`
+            })
+          });
+          }catch(err){
+              console.log(err)
+          }
+        }
+        currencyList()
+        convert.addEventListener('click', convertCurrency)
+        async function convertCurrency(){
+          try{
+              let fromCurrency =  document.querySelector('.fromCurrency').value
+              let toCurrency =  document.querySelector('.toCurrency').value
+              let amount = document.getElementById('amount').value
+              let amountAns = document.getElementById('amountAns')
+              console.log(`https://v6.exchangerate-api.com/v6/${myKey}/pair/${fromCurrency}/${toCurrency}/${amount}`)
+              const res = await fetch(`https://v6.exchangerate-api.com/v6/${myKey}/pair/${fromCurrency}/${toCurrency}/${amount}`);
+              const convertAmount = await res.json()
+              const resultDisplay = convertAmount['conversion_result']
+              amountAns.value = `  ${amount}  ${fromCurrency} Is Equivalent TO  ${resultDisplay} ${toCurrency} `;
+          }catch(error){
+              console.log(error)
+          }
+          
+        }
+    </script>
+</body>
+</html>
